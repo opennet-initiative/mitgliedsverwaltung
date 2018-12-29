@@ -1,0 +1,28 @@
+Projekt: Umstellung aller alten Beitragsformen (J10+Q15) auf neue (Q17.5)
+
+Schritte:
+- erstelle Liste mit Personen, welche noch altes Zahlungsmodell haben (41 Personen)
+-- konkrete Suche nach "=15.00" funktioniert über XML-RPC nicht
+-- konkrete Suche geht über Webinterface, jedoch sind Ergebnisse dort auf zwei Seiten verteilt
+-- Alternativen (alle Seiten filtern):
+--- getAllPages() und dann jede einzelne Seite durchsuchen
+--- in Dateisystem suchen
+- erstelle Email mit Änkündigung der Änderung
+-- darin: Name der Person, bisheriges Beitragsmodell, neues Beitragsmodell, MandatsID, Datum der Umstellung
+- automatisiert alle Beitragsmodelle anpassen
+
+
+Programmierung:
+
+:suche Personen
+durchlaufe alle Seiten (getAllPages())
+ ist "=15.00" auf Seite enthalten?
+  wenn ja, dann printe Name+Email+Beitrag+MandatsID
+
+:generiere Mails
+wie oben, jedoch
+- alten Beitrag in neuen Beitrag konvertieren
+- eine Mail generieren
+
+:ändere Beitragsformat
+wie oben, jedoch neuen Beitrag schreiben auf Seite

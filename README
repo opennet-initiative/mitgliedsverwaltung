@@ -1,1 +1,11 @@
 Werkzeuge zur Opennet Mitgliedsverwaltung
+
+config.ini.template - insert credentials here
+add_member.py       - script for adding new members
+delete_member.py    - script helping to handle deleting of members
+
+retoure_handling.sh - in todo, will later help with retoure handling
+
+projekte/           - old projects
+test-xmlrpc-edit.py - test for editing moinmoin pages via xmlrpc
+
