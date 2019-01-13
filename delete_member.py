@@ -252,8 +252,3 @@ else:
 print("=======Mitgliederdatenbank - lösche alte Seite=========================")
 print(userpageurl + "?action=DeletePage")
 print()
-
-
-print("==================TODO=======================")
-print("TODO: lege git repo bei ONI für diese Toolsammlung an")
-print("")
