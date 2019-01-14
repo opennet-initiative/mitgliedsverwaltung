@@ -210,7 +210,7 @@ Mitgliederverwaltung
 Opennet-Initiative e.V.
 """
 
-cmd = "thunderbird -compose \"subject='"+subj+"',to='"+email+"',cc=vorstand@on-i.de,body='"+body+"'\""
+cmd = "thunderbird -compose \"subject='"+subj+"',to='"+email+"',cc=vorstand@opennet-initiative.de.de,body='"+body+"'\""
 os.system(cmd)
 
 #
@@ -237,7 +237,7 @@ die unten stehende Person ist ausgetreten. Könnt ihr bitte das Zertifikat der f
 Vielen Danke,
 Martin"""
 
-	cmd = "thunderbird -compose \"subject='"+subj+"',to='admin@on-i.de',body='"+body+"'\""
+	cmd = "thunderbird -compose \"subject='"+subj+"',to='admin@opennet-initiative.de',body='"+body+"'\""
 	os.system(cmd)
 	print("Suche AP Nr. in https://wiki.opennet-initiative.de/wiki/Opennet_Nodes")
 	print("Öffne Email in Thunderbird für Abschied. TODO: ändere Absender in Thunderbird\n")
