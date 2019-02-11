@@ -130,7 +130,7 @@ print("=======Mitgliederdatenbank - alte Seite=========================\n" + tex
 print()
 print()
 
-'''
+
 # Kündigungsdatum eintragen
 text = re.sub('Austrittsdatum::', "Austrittsdatum:: 20" + cancel_date, text, re.M)
 # Mitgliedschaftsstatus ändern
@@ -148,7 +148,6 @@ print("=======Mitgliederdatenbank - neue Seite=========================")
 print("=======https://mitgliederverwaltung.opennet-initiative.de/"+quoted_name+"?action=edit =====================")
 print(text)
 print("===============================================================")
-'''
 
 
 #
@@ -160,6 +159,7 @@ if (m):
 else:
 	mid = time.time() #if ID was not found then initialize value with unique value
 print("=======Notiere Austritt für Statistik=========================")
+print("TODO: brauchen wir das noch sobald die Mitgliederseite nur geändert wird?")
 print("https://mitgliederverwaltung.opennet-initiative.de/MitgliederAustritte")
 print()
 
@@ -245,10 +245,3 @@ Martin"""
 	#os.system('echo "' + m.group(1) + '" | xclip -sel clip')  #copy to clipboard
 else:
     print("Error when extracting userdata.")
-
-#
-# lösche alte Seite
-#
-print("=======Mitgliederdatenbank - lösche alte Seite=========================")
-print(userpageurl + "?action=DeletePage")
-print()
