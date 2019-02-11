@@ -197,6 +197,12 @@ print(email)
 #Zertifikatsrückruf generieren
 #
 print("\n======Zertifikat zurückrufen + AP Nr. im Wiki löschen lassen======")
+m = regex.search(r'ID:: (.*?)\n', str(text))
+if (m):
+   mid = m.group(1)
+else:
+    print("!!!!!!!!!!!!!!!!!!!!\nError when extracting 'ID'. \n!!!!!!!!!!!!!!!!!!!!!!!")
+    mid = "XX" #add default value so that email can be send nevertheless
 m = regex.search(r'\n( Vorname::.*) Mitgliedschaft::', str(text), flags=regex.MULTILINE|regex.DOTALL)
 if (m):
 	userdata = m.group(1)
