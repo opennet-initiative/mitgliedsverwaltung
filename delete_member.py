@@ -199,7 +199,7 @@ print(email)
 print("\n======Zertifikat zurückrufen + AP Nr. im Wiki löschen lassen======")
 m = regex.search(r'\n( Vorname::.*) Mitgliedschaft::', str(text), flags=regex.MULTILINE|regex.DOTALL)
 if (m):
-	userdata = m.group(1) + "20" + cancel_date
+	userdata = m.group(1)
 	subj = "Zertifikat revoken - Austritt aus Verein - ID: " + mid
 	body = """ Hallo Admins,
 
