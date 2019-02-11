@@ -150,33 +150,6 @@ print(text)
 print("===============================================================")
 
 
-#
-# notiere für Statistik den Austritt
-#
-m = regex.search(r'ID:: (.*?)\n', str(text))
-if (m):
-   mid = m.group(1)
-else:
-	mid = time.time() #if ID was not found then initialize value with unique value
-print("=======Notiere Austritt für Statistik=========================")
-print("TODO: brauchen wir das noch sobald die Mitgliederseite nur geändert wird?")
-print("https://mitgliederverwaltung.opennet-initiative.de/MitgliederAustritte")
-print()
-
-m = regex.search(r'PLZ:: (.*?)\n', str(text))
-if (m):
-   plz = m.group(1)
-m = regex.search(r'Ort:: (.*?)\n', str(text))
-if (m):
-   ort = m.group(1)
-m = regex.search(r'Eintrittsdatum:: (.*?)\n', str(text))
-if (m):
-   eintrittsdatum = m.group(1)
-
-print("||" + mid + "||" + plz + "||" + ort + "||" + eintrittsdatum + "||" + "20" + cancel_date + "||" )
-print()
-
-
 
 #
 #generiere Abschiedsmail
