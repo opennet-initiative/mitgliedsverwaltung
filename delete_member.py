@@ -183,7 +183,7 @@ Mitgliederverwaltung
 Opennet-Initiative e.V.
 """
 
-cmd = "thunderbird -compose \"subject='"+subj+"',to='"+email+"',cc=vorstand@opennet-initiative.de.de,body='"+body+"'\""
+cmd = "thunderbird -compose \"subject='"+subj+"',to='"+email+"',cc=vorstand@opennet-initiative.de,body='"+body+"'\""
 os.system(cmd)
 
 #
