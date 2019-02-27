@@ -182,7 +182,7 @@ Mitgliederverwaltung
 Opennet-Initiative e.V.
 """
 
-cmd = "thunderbird -compose \"subject='"+subj+"',to='"+parsed_json["mail"]+"',cc=vorstand@opennet-initiative.de,body='"+body+"'\""
+cmd = "thunderbird -compose \"subject='"+subj+"',from=mitgliederverwaltung@opennet-initiative.de,to='"+parsed_json["mail"]+"',cc=vorstand@opennet-initiative.de,body='"+body+"'\""
 print("======Begrüßungsemail========")
 print("Öffne Email in Thunderbird für Begrüßung. TODO: ändere Absender in Thunderbird\n")
 os.system(cmd)
