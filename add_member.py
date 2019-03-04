@@ -12,6 +12,7 @@ from time import gmtime
 import urllib.request
 import urllib.error
 import urllib.parse
+import urllib3
 import re
 import os
 import configparser
@@ -22,15 +23,18 @@ def getConfigValue(key):
 	try:
 		config.read("config.ini")
 		configDict = {
-			"username": config['Settings']['username'],
-			"password": config['Settings']['password']
+			"certfile": config['Settings']['certfile'],
+		        "keyfile": config['Settings']['keyfile'],
+                        "password": config['Settings']['password']
+
 		}
 		return configDict.get(key)
 	except KeyError as e:
 		print("Error: Cannot read key '"+key+"' from file 'config.ini'", file=sys.stderr)
 
-#fetch username and password from ini file
-username = getConfigValue("username")
+#fetch cert, key and password from ini file
+certfile = getConfigValue("certfile")
+keyfile  = getConfigValue("keyfile")
 password = getConfigValue("password")
 
 print("Bitte kopiere das JSON vom Mitgliedsantrag hier rein. Danach drücke (2x) Enter (eine leere Zeile beendet die Eingabe).")
@@ -78,25 +82,21 @@ if len(parsed_json["investgrant"].strip()) > 0:
   invest = parsed_json["investgrant"]+"@"+str(rdate.year)+"-"+str(rdate.month)
 
 
-# create a password manager
-password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-
 # Add the username and password.
 # If we knew the realm, we could use it instead of None.
 url = "https://mitgliederverwaltung.opennet-initiative.de/Mitglieder"
-password_mgr.add_password(None, url, username, password)
 
-handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
 
-# create "opener" (OpenerDirector instance)
-opener = urllib.request.build_opener(handler)
+http=urllib3.PoolManager(cert_file= certfile,cert_reqs='CERT_REQUIRED',key_file=keyfile)
+result=http.request('GET',url);
+
 
 # use the opener to fetch a URL
 mi_id = "" #MitgliederID
 ma_id = "" #MandatID
 try:
-  data = opener.open(url)
-  html = data.read()
+  
+  html =result.data 
   m = re.search(r'freie Mitglieds- und Mandats-ID: ([\d]+) / ([\d]+) ', str(html))
   if (m):
      mi_id = m.group(1)
