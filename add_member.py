@@ -86,8 +86,10 @@ if len(parsed_json["investgrant"].strip()) > 0:
 # If we knew the realm, we could use it instead of None.
 url = "https://mitgliederverwaltung.opennet-initiative.de/Mitglieder"
 
-
-http=urllib3.PoolManager(cert_file= certfile,cert_reqs='CERT_REQUIRED',key_file=keyfile)
+if len(keyfile) > 0 :
+	http=urllib3.PoolManager(cert_file= certfile,cert_reqs='CERT_REQUIRED',key_file=keyfile)
+else:
+	http=urllib3.PoolManager(cert_file= certfile,cert_reqs='CERT_REQUIRED')
 result=http.request('GET',url);
 
 
@@ -95,7 +97,7 @@ result=http.request('GET',url);
 mi_id = "" #MitgliederID
 ma_id = "" #MandatID
 try:
-  
+
   html =result.data 
   m = re.search(r'freie Mitglieds- und Mandats-ID: ([\d]+) / ([\d]+) ', str(html))
   if (m):
