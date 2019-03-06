@@ -19,6 +19,7 @@ import os
 import sys
 import xmlrpc.client
 import configparser
+import ssl
 
 # function for reading settings from external file
 def getConfigValue(key):
@@ -26,15 +27,17 @@ def getConfigValue(key):
 	try:
 		config.read("config.ini")
 		configDict = {
-			"username": config['Settings']['username'],
-			"password": config['Settings']['password']
+			"certfile": config['Settings']['certfile'],
+		        "keyfile": config['Settings']['keyfile'],
+                        "password": config['Settings']['password']
 		}
 		return configDict.get(key)
 	except KeyError as e:
 		print("Error: Cannot read key '"+key+"' from file 'config.ini'", file=sys.stderr)
 
-#fetch usernam and password from ini file
-username = getConfigValue("username")
+#fetch cert, key and password from ini file
+certfile = getConfigValue("certfile")
+keyfile  = getConfigValue("keyfile")
 password = getConfigValue("password")
 
 #Frage gekündetes Mitglied ab
@@ -44,60 +47,51 @@ if len(username_input) == 0:
     sys.exit(0)
 
 #
-#suche mögliche URLs und zeige diese an
-#
-#TODO schreibe Webseitenzugriff unten auf xmlrpc um. Funktion: getAllPages()
+#Nutzer Seite finden
 #
 # init xmlrpc stuff
-wikiurl = "https://"+username+":"+password+"@mitgliederverwaltung.opennet-initiative.de/"
-proxy = xmlrpc.client.ServerProxy(wikiurl + "?action=xmlrpc2", allow_none=True)
-mc = xmlrpc.client.MultiCall(proxy)
-# create a password manager
-password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+sslcontext = ssl.SSLContext()
+if len(keyfile) > 0 :
+	sslcontext.load_cert_chain(certfile, password=password, keyfile=keyfile)
+else:
+	sslcontext.load_cert_chain(certfile, password=password)
+wikiurl = "https://mitgliederverwaltung.opennet-initiative.de/"
+proxy = xmlrpc.client.ServerProxy(wikiurl + "?action=xmlrpc2", allow_none=True, context=sslcontext)
 
-# Add the username and password.
-username_input_esc = urllib.parse.quote(username_input) #convert characters for being URL compatible. Else URL will be invalid later.
-# If we knew the realm, we could use it instead of None.
-url = "https://mitgliederverwaltung.opennet-initiative.de/Mitglieder?action=fullsearch&context=180&titlesearch=Titles&value=" + username_input_esc
-password_mgr.add_password(None, url, username, password)
-
-handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
-
-# create "opener" (OpenerDirector instance)
-opener = urllib.request.build_opener(handler)
-
-# use the opener to fetch a URL
-search_members = "" #gefundene Mitglieder in MitgliederDB
-html = ""
-userpageurl = ""
+returned_users = [] #similar users
+final_pagename = "" #found member
 try:
-    data = opener.open(url)
-    html = data.read()
+    pagelist = proxy.getAllPages()
+    #print(pagelist)
 
-    #was the user webpage found or only a list of users?
-    if '<ol start' in str(html):
-        #found user list
+    user = ""
+    for pagename in pagelist:
+        #is this a "Mitglieder" page?
+        if pagename.find('Mitglieder/') != -1:
+            #cut prefix ()'Mitglieder/') in results
+            user = pagename[11:]
+        else:
+            #skip this page
+            continue
 
-        #extract html with result list
-        m = re.search(r'<ol start(.*?)<\/ol>', str(html))
-        if m == None:
-            print('Error: no user found. Exiting...')
-            sys.exit(0)
-        html = m.group(1)
-        #list all users found. then exit.
-        for html_group in html.split("<li>"):
-            m = re.search(r'href=\"/(.*?)\"', str(html_group))
-            if m:
-                print(urllib.parse.unquote(m.group(1)))
+        if str.lower(user).find(str.lower(username_input)) != -1:
+            print('Found similar user: ' + user)
+            returned_users.append( pagename )
+
+    if len(returned_users) > 1:
         print('Stoppe Skript weil mehrere Nutzer gefunden wurden. Bitte sei beim nächsten Start spezifischer.')
         sys.exit(1)
+    elif len(returned_users) == 1:
+        final_pagename = returned_users[0]
+        #print("TMP set final_pagename: " + final_pagename)
     else:
-        userpageurl = data.geturl()
-        username_input = data.geturl().replace("https://mitgliederverwaltung.opennet-initiative.de/","")
-        username_input = urllib.parse.unquote(username_input)
-        print('\nUser page found: ' + username_input + "\n")
-except urllib.error.URLError as e:
-    print("Error fetching website. "+e.reason)
+        print('Keinen solchen Nutzer gefunden.')
+        sys.exit(1)
+except xmlrpc.client.Fault as err:
+    print("A fault occurred")
+    print("Fault code: %d" % err.faultCode)
+    print("Fault string: %s" % err.faultString)
+    sys.exit(1)
 
 
 #
@@ -121,11 +115,8 @@ input("\nPress enter to continue...\n")
 #
 # get user page
 #
-pagename = username_input #z.B. u'Mitglieder/Martin Garbe'
-mc.getPage(pagename)
-result = mc()
-raw = tuple(result)
-text = raw[0]
+pagename = final_pagename #z.B. u'Mitglieder/Martin Garbe'
+text = proxy.getPage(pagename)
 print("=======Mitgliederdatenbank - alte Seite=========================\n" + text)
 print()
 print()
