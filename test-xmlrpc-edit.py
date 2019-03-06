@@ -11,6 +11,7 @@ import sys
 import xmlrpc.client
 import configparser
 import base64
+import ssl
 
 # function for reading settings from external file
 def getConfigValue(key):
@@ -18,15 +19,17 @@ def getConfigValue(key):
 	try:
 		config.read("config.ini")
 		configDict = {
-			"username": config['Settings']['username'],
-			"password": config['Settings']['password']
+			"certfile": config['Settings']['certfile'],
+		        "keyfile": config['Settings']['keyfile'],
+                        "password": config['Settings']['password']
 		}
 		return configDict.get(key)
 	except KeyError as e:
 		print("Error: Cannot read key '"+key+"' from file 'config.ini'")
 
-#fetch usernam and password from ini file
-username = getConfigValue("username")
+#fetch cert, key and password from ini file
+certfile = getConfigValue("certfile")
+keyfile  = getConfigValue("keyfile")
 password = getConfigValue("password")
 
 #Frage gekündetes Mitglied ab
@@ -37,8 +40,13 @@ if len(username_input) == 0:
 	sys.exit(0)
 
 # init xmlrpc stuff
-wikiurl = "https://"+username+":"+password+"@mitgliederverwaltung.opennet-initiative.de/"
-proxy = xmlrpc.client.ServerProxy(wikiurl + "?action=xmlrpc2", allow_none=True)
+sslcontext = ssl.SSLContext()
+if len(keyfile) > 0 :
+	sslcontext.load_cert_chain(certfile, password=password, keyfile=keyfile)
+else:
+	sslcontext.load_cert_chain(certfile, password=password)
+wikiurl = "https://mitgliederverwaltung.opennet-initiative.de/"
+proxy = xmlrpc.client.ServerProxy(wikiurl + "?action=xmlrpc2", allow_none=True, context=sslcontext)
 mc = xmlrpc.client.MultiCall(proxy)
 # create a password manager
 password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
