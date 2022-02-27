@@ -169,7 +169,6 @@ Den Beitragseinzug, deinen Eintrag in unserer Mailing-Liste und deinen Eintrag i
 
 Vielen Dank für deine bisherige Unterstützung.
 
-Jan Conrads
 Mitgliederverwaltung
 Opennet-Initiative e.V.
 """
@@ -205,7 +204,7 @@ die unten stehende Person ist ausgetreten. Könnt ihr bitte das Zertifikat der f
 """ + userdata + """
 
 Vielen Dank,
-Jan"""
+Mitgliederverwaltung"""
 
 	cmd = "thunderbird -compose \"subject='"+subj+"',to='admin@opennet-initiative.de',body='"+body+"'\""
 	os.system(cmd)
